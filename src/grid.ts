@@ -26,6 +26,7 @@ export class Grid {
     }
 
     pushRecalculate(x: number, y: number, reason: string) {
+        this.updateAllowed(x, y);
         this.recalcs.push({x, y, reason});
     }
 
@@ -33,13 +34,15 @@ export class Grid {
         while(true) {
             const c = this.recalcs.pop();
             if (c === undefined) break;
-            this.recalculate(c.x, c.y);
+            console.log(`Recalc for ${c.x},${c.y} due to ${c.reason}`);
+            this.recalculate();
         }
     }
 
     setUser(x: number, y: number, val: Number1to9) {
         this.array[x][y].setUser(val);
-        this.recalculate(x, y);
+        this.updateAllowed(x, y);
+        this.recalculate();
         this.doRecalculations();
     }
 
@@ -126,8 +129,7 @@ export class Grid {
         }
     }
 
-    recalculate(x: number, y: number) {
-        this.updateAllowed(x, y);
+    recalculate() {
         // Next, scan each for "only" option
         for (let i = 0; i != GRID_SIZE; ++i) {
             for (let j = 0; j != GRID_SIZE; ++j) {

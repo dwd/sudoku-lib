@@ -90,12 +90,17 @@ test("Set subgrid", () => {
     const g = new Grid();
     for (let i = 0; i != 3; ++i) {
         for (let j = 0; j != 3; ++j) {
+            const val = (i * 3) + j + 1 as Number1to9;
+            if (val >= 8) {
+                break;
+            }
             g.setUser(i, j, ((i * 3) + j + 1) as Number1to9);
-            expect(g.recalcs.length).toBe(0);
         }
     }
+    expect(g.array[2][1].hasValue()).toBeFalsy();
+    expect(g.array[2][2].hasValue()).toBeFalsy();
+    expect(g.array[2][3].isAllowed(9)).toBeTruthy();
     g.setUser(2, 1,  8);
-    expect(g.recalcs.length).toBe(0);
     expect(g.array[2][2].hasValue()).toBeTruthy();
     expect(g.array[2][3].isAllowed(9)).toBeFalsy();
 });
@@ -111,3 +116,48 @@ test("Pattern", () => {
     g.setUser(1, 4, 1);
     expect(g.array[2][2].hasValue()).toBeTruthy();
 });
+
+test("Puzzle", () => {
+    const g = new Grid();
+    const n = null;
+    const vals: (Number1to9 | null)[][] = [
+        [n,n,3,7,n,6,n,n,5],
+        [2,n,7,8,9,n,6,4,n],
+        [n,n,n,n,4,n,n,3,7],
+        [n,n,n,n,n,2,3,n,4],
+        [n,n,2,9,n,4,7,n,n],
+        [4,n,9,1,n,n,n,n,n],
+        [8,2,n,n,1,n,n,n,n],
+        [n,1,5,n,7,8,4,n,9],
+        [9,n,n,3,n,5,1,n,n],
+    ];
+    const answer: (Number1to9|null)[][] = [
+        [1,4,3,7,2,6,9,8,5],
+        [2,5,7,8,9,3,6,4,1],
+        [6,9,8,5,4,1,2,3,7],
+        [7,8,1,6,5,2,3,9,4],
+        [5,3,2,9,8,4,7,1,6],
+        [4,6,9,1,3,7,8,5,2],
+        [8,2,6,4,1,9,5,7,3],
+        [3,1,5,2,7,8,4,6,9],
+        [9,7,4,3,6,5,1,2,8],
+    ];
+    vals.map((row, y) => {
+        row.map((val, x) => {
+            if (val !== null) {
+                console.log(`Setting ${x},${y} to ${val}`);
+                if (g.array[x][y].hasValue()) {
+                    expect(g.array[x][y].value()).toBe(answer[y][x]);
+                } else {
+                    g.setUser(x, y, val);
+                }
+            }
+        });
+    });
+    answer.map((row, y) => {
+        row.map((val, x) => {
+            expect(g.array[x][y].hasValue()).toBeTruthy();
+            expect(g.array[x][y].value()).toBe(val);
+        });
+    });
+})

@@ -12,6 +12,8 @@ export class Square {
     }
 
     setUser(val: Number1to9) {
+        if (this.hasValue()) throw new Error('Already set!');
+        if (!this.isAllowed(val)) throw new Error('Not allowed?!');
         this.allowed = [val];
         this.userSet = val;
     }
@@ -21,6 +23,8 @@ export class Square {
     }
 
     setPresent(val: Number1to9) {
+        if (this.hasValue()) throw new Error('Already set!');
+        if (!this.isAllowed(val)) throw new Error('Not allowed?!');
         this.allowed = [val];
         this.present = val;
     }
