@@ -1,7 +1,14 @@
 {
-  "name": "sudoku-lib",
+  "name": "@dwd/sudoku-lib",
   "version": "1.0.0",
   "description": "A library for solving Sudoku",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dwd/sudoku-lib.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "scripts": {
     "build": "npx tsc",
     "test": "jest"
