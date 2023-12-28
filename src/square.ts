@@ -32,5 +32,11 @@ export class Square {
     isAllowed(val: Number1to9): boolean {
         return this.allowed.find(v => v === val) !== undefined;
     }
+
+    value(): Number1to9 | null {
+        if (this.userSet !== null) return this.userSet;
+        if (this.present !== null) return this.present;
+        return null;
+    }
 }
 
