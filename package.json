@@ -1,0 +1,14 @@
+{
+  "name": "sudoku-lib",
+  "version": "1.0.0",
+  "description": "A library for solving Sudoku",
+  "scripts": {
+    "build": "npx tsc",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.3.3",
+    "jest": "^29.7.0"
+  }
+}
