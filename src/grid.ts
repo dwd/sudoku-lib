@@ -12,10 +12,12 @@ interface Coord {
 
 export class Grid {
     public array: Square[][]
+    public savedArray: Square[][][]
     public recalcs: Coord[]
 
     constructor() {
         this.array = new Array<Square[]>(GRID_SIZE)
+        this.savedArray = new Array<Square[][]>();
         this.recalcs = new Array<Coord>();
         for (let i = 0; i != GRID_SIZE; ++i) {
             this.array[i] = new Array<Square>(GRID_SIZE);
@@ -23,6 +25,56 @@ export class Grid {
                 this.array[i][j] = new Square();
             }
         }
+    }
+
+    saveArray() {
+        this.savedArray.push(this.array);
+        const array = new Array<Square[]>(GRID_SIZE);
+        for (let i = 0; i != GRID_SIZE; ++i) {
+            array[i] = new Array<Square>(GRID_SIZE);
+            for (let j = 0; j != GRID_SIZE; ++j) {
+                array[i][j] = new Square();
+                array[i][j].userSet = this.array[i][j].userSet;
+                array[i][j].present = this.array[i][j].present;
+                array[i][j].allowed = this.array[i][j].allowed;
+            }
+        }
+        this.array = array;
+    }
+
+    retry() {
+        if (this.savedArray.length == 0) {
+            throw new Error("Trying to revert without saved array");
+        }
+        this.array = this.savedArray.pop()!;
+        this.saveArray();
+    }
+
+    trySolve(): boolean {
+        // Find a square with no value.
+        for (let i = 0; i != GRID_SIZE; ++i) {
+            for (let j = 0; j != GRID_SIZE; ++j) {
+                if (!this.array[i][j].hasValue()) {
+                    // Try all the values and see which one results in a solution.
+                    for (let test of this.array[i][j].allowed) {
+                        this.saveArray();
+                        try {
+                            this.array[i][j].setPresent(test);
+                            this.pushRecalculate(i, j, "Try it and see");
+                            this.doRecalculations();
+                            return this.trySolve();
+                        } catch(e) {
+                            this.retry();
+                        }
+                    }
+                }
+            }
+        }
+        return true; // Got here, so everything must work?
+    }
+
+    solve() {
+        this.trySolve();
     }
 
     pushRecalculate(x: number, y: number, reason: string) {
@@ -130,7 +182,7 @@ export class Grid {
     }
 
     recalculate() {
-        // Next, scan each for "only" option
+        // First, scan each for "only" option
         for (let i = 0; i != GRID_SIZE; ++i) {
             for (let j = 0; j != GRID_SIZE; ++j) {
                 if (this.array[i][j].userSet !== null) continue;
@@ -142,7 +194,7 @@ export class Grid {
                 }
             }
         }
-        // FInally, look for "one remaining" options
+        // Next, look for "one remaining" options
         for (let test = 1; test <= 9; ++test) {
             const testValue = test as Number1to9
             for (let sgx = 0; sgx !== 3; ++sgx) {

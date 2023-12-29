@@ -31,6 +31,9 @@ export class Square {
 
     exclude(val: Number1to9) {
         this.allowed = this.allowed.filter(v => v !== val);
+        if (this.allowed.length === 0) {
+            throw new Error("Nothing allowed!");
+        }
     }
 
     isAllowed(val: Number1to9): boolean {

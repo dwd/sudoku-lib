@@ -161,3 +161,49 @@ test("Puzzle", () => {
         });
     });
 })
+
+test("Hard Puzzle", () => {
+    const g = new Grid();
+    const n = null;
+    const vals: (Number1to9 | null)[][] = [
+        [n,2,n,3,n,6,n,n,n],
+        [6,n,n,n,1,n,7,n,n],
+        [n,n,n,n,n,5,6,1,n],
+        [n,n,8,n,n,n,3,2,n],
+        [n,n,n,9,n,7,n,n,n],
+        [n,6,3,n,n,n,4,n,n],
+        [n,3,1,5,n,n,n,n,n],
+        [n,n,5,n,7,n,n,n,8],
+        [n,n,n,1,n,4,n,5,n],
+    ];
+    const answer: (Number1to9|null)[][] = [
+        [1,2,7,3,9,6,8,4,5],
+        [6,5,9,4,1,8,7,3,2],
+        [3,8,4,7,2,5,6,1,9],
+        [5,9,8,6,4,1,3,2,7],
+        [4,1,2,9,3,7,5,8,6],
+        [7,6,3,8,5,2,4,9,1],
+        [8,3,1,5,6,9,2,7,4],
+        [9,4,5,2,7,3,1,6,8],
+        [2,7,6,1,8,4,9,5,3],
+    ];
+    vals.map((row, y) => {
+        row.map((val, x) => {
+            if (val !== null) {
+                if (g.array[x][y].hasValue()) {
+                    expect(g.array[x][y].value()).toBe(answer[y][x]);
+                } else {
+                    g.setUser(x, y, val);
+                }
+            }
+        });
+    });
+    g.solve();
+    answer.map((row, y) => {
+        row.map((val, x) => {
+            expect(g.array[x][y].hasValue()).toBeTruthy();
+            expect(g.array[x][y].value()).toBe(val);
+        });
+    });
+})
+
