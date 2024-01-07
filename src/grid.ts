@@ -108,10 +108,16 @@ export class Grid {
     }
 
     setUser(x: number, y: number, val: Number1to9) {
-        this.array[x][y].setUser(val);
-        this.updateAllowed(x, y);
-        this.recalculate();
-        this.doRecalculations();
+        this.saveArray();
+        try {
+            this.array[x][y].setUser(val);
+            this.updateAllowed(x, y);
+            this.recalculate();
+            this.doRecalculations();
+        } catch (e) {
+            this.popArray();
+            this.array[x][y].exclude(val);
+        }
     }
 
     testSubgrid(sgx: number, sgy: number, test: Number1to9) {
