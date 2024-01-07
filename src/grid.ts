@@ -42,12 +42,11 @@ export class Grid {
         this.array = array;
     }
 
-    retry() {
+    popArray() {
         if (this.savedArray.length == 0) {
             throw new Error("Trying to revert without saved array");
         }
         this.array = this.savedArray.pop()!;
-        this.saveArray();
     }
 
     trySolve(): boolean {
@@ -59,22 +58,39 @@ export class Grid {
                     for (let test of this.array[i][j].allowed) {
                         this.saveArray();
                         try {
+                            console.log(`Trying ${test} of [${this.array[i][j].allowed}] for ${i}, ${j} at depth ${this.savedArray.length}`);
                             this.array[i][j].setPresent(test);
                             this.pushRecalculate(i, j, "Try it and see");
                             this.doRecalculations();
-                            return this.trySolve();
+                            if (this.trySolve()) {
+                                console.log(`Picked ${test} for ${i}, ${j} at depth ${this.savedArray.length}`);
+                                return true;
+                            }
                         } catch(e) {
-                            this.retry();
+                            const err = e as Error;
+                            console.log(`Received error: ${err.message} on ${test} for ${i},${j} depth ${this.savedArray.length}`);
                         }
+                        this.popArray();
                     }
+                    throw new Error(`Allowable options exhausted: ${this.array[i][j].allowed} as ${i}, ${j}`);
                 }
             }
         }
-        return true; // Got here, so everything must work?
+        // If I got here, I'm either solved or else I need to retry at a higher level.
+        return this.isSolved();
     }
 
     solve() {
         this.trySolve();
+    }
+
+    isSolved(): boolean {
+        for (let i = 0; i != GRID_SIZE; ++i) {
+            for (let j = 0; j != GRID_SIZE; ++j) {
+                if (!this.array[i][j].hasValue()) return false;
+            }
+        }
+        return true;
     }
 
     pushRecalculate(x: number, y: number, reason: string) {
@@ -86,7 +102,7 @@ export class Grid {
         while(true) {
             const c = this.recalcs.pop();
             if (c === undefined) break;
-            console.log(`Recalc for ${c.x},${c.y} due to ${c.reason}`);
+            // console.log(`Recalc for ${c.x},${c.y} due to ${c.reason}`);
             this.recalculate();
         }
     }

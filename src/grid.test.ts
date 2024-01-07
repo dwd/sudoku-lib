@@ -4,6 +4,7 @@ import {Number1to9} from "./types";
 
 test("Initial state", () => {
     const g = new Grid();
+    expect(g.isSolved()).toBeFalsy();
     expect(g.array[0][0].hasValue()).toBeFalsy();
     expect(g.array[8][8].hasValue()).toBeFalsy();
 });
@@ -160,6 +161,7 @@ test("Puzzle", () => {
             expect(g.array[x][y].value()).toBe(val);
         });
     });
+    expect(g.isSolved()).toBeTruthy();
 })
 
 test("Hard Puzzle", () => {
@@ -198,6 +200,7 @@ test("Hard Puzzle", () => {
             }
         });
     });
+    expect(g.isSolved()).toBeFalsy();
     g.solve();
     answer.map((row, y) => {
         row.map((val, x) => {
@@ -205,5 +208,13 @@ test("Hard Puzzle", () => {
             expect(g.array[x][y].value()).toBe(val);
         });
     });
+    expect(g.isSolved()).toBeTruthy();
+})
+
+test("From scratch", () => {
+    const g = new Grid();
+    expect(g.isSolved()).toBeFalsy();
+    g.solve();
+    expect(g.isSolved()).toBeTruthy();
 })
 
